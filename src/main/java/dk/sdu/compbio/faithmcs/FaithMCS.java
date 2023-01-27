@@ -82,7 +82,9 @@ public class FaithMCS {
             aligner = new UndirectedIteratedLocalSearch(networks, perturbation);
         }
 
+        System.out.println("before aligner.run");
         aligner.run(max_nonimproving);
+        System.out.println("after aligner.run");
         Alignment alignment = aligner.getAlignment();
 
         if (cmd.hasOption("output")) {

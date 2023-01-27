@@ -74,13 +74,14 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
             }
             System.out.println("after step");
             System.err.println(String.format("current: %d edges, best: %d edges", quality, best_quality));
+            nonimproving = max_nonimproving; // PAT DEBUG: to only loop once
         }
     }
 
     @Override
     public boolean step() {
         System.out.println("before perturbation step");
-        
+
         // perturbation step
         int count = Math.round(M * perturbation_amount);
         for(int i = 1; i < n; ++i) {
@@ -91,7 +92,7 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
                 swap(indices.get(i), nodes.get(i).get(j), nodes.get(i).get(k));
             }
         }
-        
+
         System.out.println("after perturbation step");
         System.out.println("before local search step");
 
@@ -125,8 +126,9 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
                     }
                 }
             }
+            repeat = false; // PAT DEBUG: only loop once
         }
-        
+
         System.out.println("after local search step");
         System.out.println("before count edges step");
 

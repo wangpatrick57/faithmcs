@@ -98,10 +98,8 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
 
         // local search step
         boolean repeat = true;
-        int numSwaps = 0;
         while(repeat) {
             repeat = false;
-            System.out.println("performed " + (numSwaps / n) + " swaps per network");
             for (int i = 1; i < n; ++i) {
                 for (int j = 0; j < M-1; ++j) {
                     int finalI = i;
@@ -122,7 +120,10 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
                     if(dt > 0) {
                         repeat = true;
                         swap(indices.get(i), nodes.get(i).get(j), nodes.get(i).get(best));
-                        ++numSwaps;
+                    }
+
+                    if (j % 1000 == 0) {
+                        System.out.println("done with " + j + " / " + n " nodes for network " + i);
                     }
                 }
             }

@@ -67,15 +67,16 @@ public class DirectedIteratedLocalSearch implements IteratedLocalSearch {
     }
 
     @Override
-    public void run(int max_nonimproving) {
-        int nonimproving = 0;
+    public void run(int max_nonimproving, int max_num_steps) {
+        throw new UnsupportedOperationException();
+        /* int nonimproving = 0;
         while(nonimproving < max_nonimproving) {
             nonimproving++;
             if(step()) {
                 nonimproving = 0;
             }
             System.err.println(String.format("current: %d edges, best: %d edges", quality, best_quality));
-        }
+            } */
     }
 
     @Override

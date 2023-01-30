@@ -64,24 +64,21 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
     }
 
     @Override
-    public void run(int max_nonimproving) {
+    public void run(int max_nonimproving, int max_num_steps) {
         int nonimproving = 0;
-        while(nonimproving < max_nonimproving) {
+        int num_steps = 0;
+        while(nonimproving < max_nonimproving && num_steps < max_num_steps) {
             nonimproving++;
-            System.out.println("before step");
             if(step()) {
                 nonimproving = 0;
             }
-            System.out.println("after step");
-            System.err.println(String.format("current: %d edges, best: %d edges", quality, best_quality));
-            nonimproving = max_nonimproving; // PAT DEBUG: to only loop once
+            num_steps++;
+            System.err.println(String.format("step: %d, current: %d edges, best: %d edges", num_steps, quality, best_quality));
         }
     }
 
     @Override
     public boolean step() {
-        System.out.println("before perturbation step");
-
         // perturbation step
         int count = Math.round(M * perturbation_amount);
         for(int i = 1; i < n; ++i) {
@@ -93,13 +90,13 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
             }
         }
 
-        System.out.println("after perturbation step");
-        System.out.println("before local search step");
-
         // local search step
         boolean repeat = true;
+        int num_repeats = 0;
+        int num_swaps_this_repeat = 0;
         while(repeat) {
             repeat = false;
+            num_swaps_this_repeat = 0;
             for (int i = 1; i < n; ++i) {
                 for (int j = 0; j < M-1; ++j) {
                     int finalI = i;
@@ -119,19 +116,14 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
 
                     if(dt > 0) {
                         repeat = true;
+                        num_swaps_this_repeat += 1;
                         swap(indices.get(i), nodes.get(i).get(j), nodes.get(i).get(best));
-                    }
-
-                    if (j % 1000 == 0) {
-                        System.out.println("done with " + j + " / " + n " nodes for network " + i);
                     }
                 }
             }
-            repeat = false; // PAT DEBUG: only loop once
+            num_repeats += 1;
+            System.err.println("on local search repeat #" + num_repeats + ", where " + num_swaps_this_repeat + " swaps happened");
         }
-
-        System.out.println("after local search step");
-        System.out.println("before count edges step");
 
         // count edges
         quality = edges.countEdges();

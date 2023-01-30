@@ -23,12 +23,14 @@ public class FaithMCS {
     private static final int DEFAULT_EXCEPTIONS = 0;
     private static final float DEFAULT_PERTURBATION = 0.2f;
     private static final int DEFAULT_MAX_NONIMPROVING = 20;
+    private static final int DEFAULT_MAX_NUM_STEPS = 50;
 
     public static void main(String[] args) throws ParseException, FileNotFoundException, ImportException {
         Options options = new Options();
         options.addOption("h", "help", false, "Show this help text");
         options.addOption("d", "directed", false, "Treat networks as directed.");
         options.addOption("i", "max-nonimproving", true, String.format("Stop algorithm after this number of non-improving iterations. Default: %d.", DEFAULT_MAX_NONIMPROVING));
+        options.addOption("s", "max-num-steps", true, String.format("Stop algorithm after this number of iterations. Default: %d.", DEFAULT_MAX_NUM_STEPS));
         options.addOption("p", "perturbation", true, String.format("Ratio of node to swap during perturbation. Default: %f.", DEFAULT_PERTURBATION));
         options.addOption("e", "exceptions", true, String.format("Number of exceptions allowed per edge in solution. Default: %d.", DEFAULT_EXCEPTIONS));
         options.addOption(null, "remove-exception-leaves", false, "Remove leaf connected by an exception edge from solution.");
@@ -51,6 +53,7 @@ public class FaithMCS {
         }
 
         int max_nonimproving = Integer.parseInt(cmd.getOptionValue("max-nonimproving", Integer.toString(DEFAULT_MAX_NONIMPROVING)));
+        int max_num_steps = Integer.parseInt(cmd.getOptionValue("max-num-steps", Integer.toString(DEFAULT_MAX_NUM_STEPS)));
         float perturbation = Float.parseFloat(cmd.getOptionValue("perturbation", Float.toString(DEFAULT_PERTURBATION)));
 
         IteratedLocalSearch aligner;
@@ -83,7 +86,7 @@ public class FaithMCS {
         }
 
         System.out.println("before aligner.run");
-        aligner.run(max_nonimproving);
+        aligner.run(max_nonimproving, max_num_steps);
         System.out.println("after aligner.run");
         Alignment alignment = aligner.getAlignment();
 

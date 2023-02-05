@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch FaithMCS Testing",
+            "request": "launch",
+            "mainClass": "dk.sdu.compbio.faithmcs.FaithMCS",
+            "projectName": "faithmcs",
+            "args": [
+                "-s1",
+                "networks/alpha_s0.sif",
+                "networks/alpha_s1.sif"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Launch FaithMCS Mouse-Rat",
+            "request": "launch",
+            "mainClass": "dk.sdu.compbio.faithmcs.FaithMCS",
+            "projectName": "faithmcs",
+            "args": [
+                "-s5",
+                "networks/mouse.sif",
+                "networks/rat.sif"
+            ]
+        }
+    ]
+}

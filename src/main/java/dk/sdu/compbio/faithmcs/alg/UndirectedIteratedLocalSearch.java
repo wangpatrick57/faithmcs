@@ -15,6 +15,8 @@ import java.util.stream.IntStream;
 public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
     private final int n, M;
     private final List<UndirectedNetwork> networks;
+    private final int min_lsi_swaps;
+    private final int MIN_LSI_SWAP_RATIO = 100;
     private float perturbation_amount;
 
     private final List<NeighborIndex<Node,Edge>> indices;
@@ -26,10 +28,12 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
 
     public UndirectedIteratedLocalSearch(List<UndirectedNetwork> networks, float perturbation_amount) {
         this.networks = networks;
+        // min_lsi_swaps uses the min of the edges instead of the max because the # of swaps is limited to the min # of edges
+        this.min_lsi_swaps = (int)(networks.stream().mapToInt(g -> g.edgeSet().size()).min().getAsInt() / MIN_LSI_SWAP_RATIO);
         this.perturbation_amount = perturbation_amount;
 
         n = networks.size();
-        M = networks.stream().mapToInt(v -> v.vertexSet().size()).max().getAsInt();
+        M = networks.stream().mapToInt(g -> g.vertexSet().size()).max().getAsInt();
 
         indices = new ArrayList<>();
 
@@ -92,11 +96,12 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
 
         // local search step
         boolean repeat = true;
-        int num_repeats = 0;
-        int num_swaps_this_repeat = 0;
+        int num_iterations = 0;
+        int num_swaps_this_iteration = 0;
         while(repeat) {
             repeat = false;
-            num_swaps_this_repeat = 0;
+            num_swaps_this_iteration = 0;
+            long iteration_start_time = System.currentTimeMillis();
             for (int i = 1; i < n; ++i) {
                 for (int j = 0; j < M-1; ++j) {
                     int finalI = i;
@@ -115,14 +120,20 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
                     int dt = dts.get(best-(j+1));
 
                     if(dt > 0) {
-                        repeat = true;
-                        num_swaps_this_repeat += 1;
+                        num_swaps_this_iteration += 1;
                         swap(indices.get(i), nodes.get(i).get(j), nodes.get(i).get(best));
                     }
                 }
             }
-            num_repeats += 1;
-            System.err.println("on local search repeat #" + num_repeats + ", where " + num_swaps_this_repeat + " swaps happened");
+            num_iterations += 1;
+            long iteration_end_time = System.currentTimeMillis();
+
+            if (num_swaps_this_iteration >= this.min_lsi_swaps) {
+                repeat = true;
+            }
+
+            System.err.println("LSI " + num_iterations + ", S=" + num_swaps_this_iteration);
+            System.err.println("LSI " + num_iterations + " took " + (iteration_end_time - iteration_start_time) + "ms");
         }
 
         // count edges

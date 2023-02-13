@@ -16,7 +16,7 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
     private final int n, M;
     private final List<UndirectedNetwork> networks;
     private final int min_lsi_swaps;
-    private final int MIN_LSI_SWAP_RATIO = 100;
+    private final int MIN_LSI_SWAP_RATIO = 1000;
     private float perturbation_amount;
 
     private final List<NeighborIndex<Node,Edge>> indices;

@@ -69,6 +69,8 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
 
     @Override
     public void run(int max_nonimproving, int max_num_steps) {
+        System.err.println(String.format("running with max_nonimproving=%d, max_num_steps=%d, perturbation_amount=%f", max_nonimproving, max_num_steps, perturbation_amount));
+
         int nonimproving = 0;
         int num_steps = 0;
         while(nonimproving < max_nonimproving && num_steps < max_num_steps) {

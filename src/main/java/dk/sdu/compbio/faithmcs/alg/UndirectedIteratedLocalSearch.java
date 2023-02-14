@@ -26,7 +26,7 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
     private int quality, best_quality;
     private final Random rand;
 
-    public UndirectedIteratedLocalSearch(List<UndirectedNetwork> networks, float perturbation_amount) {
+    public UndirectedIteratedLocalSearch(List<UndirectedNetwork> networks, float perturbation_amount, long random_seed) {
         this.networks = networks;
         // min_lsi_swaps uses the min of the edges instead of the max because the # of swaps is limited to the min # of edges
         this.min_lsi_swaps = (int)(networks.stream().mapToInt(g -> g.edgeSet().size()).min().getAsInt() / MIN_LSI_SWAP_RATIO);
@@ -60,7 +60,14 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
         }
 
         edges = new UndirectedEdgeMatrix(networks);
-        rand = new Random();
+
+        if (random_seed == -1) {
+            System.out.println("Using random seed");
+            rand = new Random();
+        } else {
+            System.out.println("Using seed " + random_seed);
+            rand = new Random(random_seed);
+        }
 
         best_positions = new int[n][M];
         copyPositions(nodes, best_positions);

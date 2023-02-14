@@ -37,6 +37,8 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
 
         indices = new ArrayList<>();
 
+        // we make fake nodes because different networks may have different numbers of nodes. see writeAlignment()
+        // also, the NeighborIndex is simply a cache of the number of neighbors of each node
         int fid = 0;
         for(UndirectedNetwork network : networks) {
             while(network.vertexSet().size() < M) {
@@ -47,10 +49,12 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
             indices.add(new NeighborIndex<>(network));
         }
 
+        // list of lists of nodes in each network
         nodes = networks.stream()
                 .map(network -> new ArrayList<>(network.vertexSet()))
                 .collect(Collectors.toList());
 
+        // for each network, sort the nodes by degree in descending order, and set position based on that too
         for(int i = 0; i < n; ++i) {
             nodes.get(i).sort(Comparator.comparingInt(networks.get(i)::degreeOf).reversed());
             int pos = 0;
@@ -62,6 +66,9 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
         edges = new UndirectedEdgeMatrix(networks);
         rand = new Random();
 
+        // the nodes at position X in all the networks will be aligned to each other. For example, if node15 in A and node38 in B are both in position 0, they'll be aligned to each other
+        // best_position[i][j] refers to the position of the jth node in the ith network
+        // the "jth node" in a network is the node with the jth highest degree
         best_positions = new int[n][M];
         copyPositions(nodes, best_positions);
         best_quality = edges.countEdges();
@@ -86,6 +93,7 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
     @Override
     public boolean step() {
         // perturbation step
+        // M is the max amount of nodes out of all the networks
         int count = Math.round(M * perturbation_amount);
         for(int i = 1; i < n; ++i) {
             for(int rep = 0; rep < count; ++rep) {
@@ -185,14 +193,16 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
         int i = u.getPosition();
         int j = v.getPosition();
 
+        // for all nodes which are neighbors of u but not v
         for(Node w : Sets.difference(index.neighborsOf(u), index.neighborsOf(v))) {
-            if(w != v) {
+            if(w != v) { // since v is not a neighbor of itself the set above might contain v. we want to ignore it though
                 int l = w.getPosition();
                 edges.decrement(i, l);
                 edges.increment(j, l);
             }
         }
 
+        // see above comments
         for(Node w : Sets.difference(index.neighborsOf(v), index.neighborsOf(u))) {
             if(w != u) {
                 int l = w.getPosition();
@@ -205,6 +215,7 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
         v.setPosition(i);
     }
 
+    // called after aligner.run()
     @Override
     public UndirectedAlignment getAlignment() {
         // copy best solution back into nodes

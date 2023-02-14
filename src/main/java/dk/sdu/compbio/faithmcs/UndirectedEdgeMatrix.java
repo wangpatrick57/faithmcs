@@ -28,6 +28,7 @@ public class UndirectedEdgeMatrix implements EdgeMatrix {
         }
     }
 
+    // counts the number of edges which are present in ALL networks
     @Override
     public int countEdges() {
         int count = 0;

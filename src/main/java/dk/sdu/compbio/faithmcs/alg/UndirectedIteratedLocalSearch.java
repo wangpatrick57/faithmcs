@@ -140,6 +140,8 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
                         num_swaps_this_iteration += 1;
                         NeighborIndex<Node,Edge> index = indices.get(i);
                         swap(index, nodes.get(i).get(j), nodes.get(i).get(best));
+
+                        // PAT DEBUG
                         int node1Deg = index.neighborsOf(nodes.get(i).get(j)).size();
                         int node2Deg = index.neighborsOf(nodes.get(i).get(best)).size();
                         int SMALL_DEG_THRESHOLD = 20;

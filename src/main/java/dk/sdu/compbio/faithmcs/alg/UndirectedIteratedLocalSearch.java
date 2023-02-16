@@ -140,16 +140,6 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
                         num_swaps_this_iteration += 1;
                         NeighborIndex<Node,Edge> index = indices.get(i);
                         swap(index, nodes.get(i).get(j), nodes.get(i).get(best));
-
-                        // PAT DEBUG
-                        int node1Deg = index.neighborsOf(nodes.get(i).get(j)).size();
-                        int node2Deg = index.neighborsOf(nodes.get(i).get(best)).size();
-                        int SMALL_DEG_THRESHOLD = 20;
-
-                        // swaps of two low degree nodes are inconsequential so I ignore them
-                        if (!(node1Deg < SMALL_DEG_THRESHOLD && node2Deg < SMALL_DEG_THRESHOLD)) {
-                            System.out.println(String.format("just swapped a deg%d and a deg%d", node1Deg, node2Deg));
-                        }
                     }
                 }
             }
@@ -231,6 +221,18 @@ public class UndirectedIteratedLocalSearch implements IteratedLocalSearch {
 
         u.setPosition(j);
         v.setPosition(i);
+
+        // PAT DEBUG
+        int uDeg = index.neighborsOf(u).size();
+        int vDeg = index.neighborsOf(v).size();
+
+        int maxDeg = Math.max(uDeg, vDeg);
+        int minDeg = Math.min(uDeg, vDeg);
+        boolean hasLargeRatio = (float)minDeg / maxDeg < 0.1;
+        boolean hasEnoughAbsoluteSize = maxDeg > 100;
+        if (hasEnoughAbsoluteSize && hasLargeRatio) {
+            System.out.println(String.format("just swapped a deg%d and a deg%d", uDeg, vDeg));
+        }
     }
 
     // called after aligner.run()
